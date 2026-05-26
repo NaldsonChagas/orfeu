@@ -1,0 +1,115 @@
+{
+  "rules": {
+    "general": [
+      {
+        "rule": "commit-lint",
+        "description": "Commit messages must follow Conventional Commits format in English. E.g.: feat(auth): add SSO login",
+        "severity": "critical"
+      },
+      {
+        "rule": "branch-naming",
+        "description": "Branches must use prefix: feat/, fix/, chore/, docs/, refactor/ followed by English description",
+        "severity": "critical"
+      },
+      {
+        "rule": "no-secrets-in-code",
+        "description": "No API keys, passwords, or tokens may be committed. Use environment variables only",
+        "severity": "critical"
+      },
+      {
+        "rule": "readable-names",
+        "description": "Variables, functions, and classes must have readable names without abbreviations. Names must reveal intent",
+        "severity": "high"
+      },
+      {
+        "rule": "no-commented-code",
+        "description": "Commented-out code must be removed before merge. Comments only to explain why, never what",
+        "severity": "medium"
+      },
+      {
+        "rule": "pr-references-trello",
+        "description": "PRs must reference the Trello card in the title. E.g.: feat(auth): SSO login [ORFEU-42]",
+        "severity": "high"
+      },
+      {
+        "rule": "english-only",
+        "description": "All code (.ts, .md), variables, functions, comments, file names, branches, and commit messages must be written in English. Documentation in Confluence and Trello cards may be in Portuguese",
+        "severity": "critical"
+      }
+    ],
+    "frontend": [
+      {
+        "rule": "no-any-typescript",
+        "description": "The any type is forbidden. Use explicit typing or unknown when the type is unknown",
+        "severity": "critical"
+      },
+      {
+        "rule": "no-inline-styles",
+        "description": "Inline styles forbidden. Use CSS classes, Tailwind, or design tokens",
+        "severity": "high"
+      },
+      {
+        "rule": "component-size-limit",
+        "description": "Components must not exceed 200 lines. Decompose into smaller components",
+        "severity": "high"
+      },
+      {
+        "rule": "accessibility-a11y",
+        "description": "Every interactive element must have aria-label, alt, and correct HTML semantics",
+        "severity": "high"
+      },
+      {
+        "rule": "no-hardcoded-strings",
+        "description": "User-visible text must be externalized via i18n, never hardcoded in the component",
+        "severity": "medium"
+      },
+      {
+        "rule": "state-management-pattern",
+        "description": "Global state only via the project-defined solution. Local state stays in the component",
+        "severity": "high"
+      },
+      {
+        "rule": "responsive-required",
+        "description": "Every component must work on mobile (375px) and desktop (1280px+)",
+        "severity": "medium"
+      }
+    ],
+    "backend": [
+      {
+        "rule": "unit-tests-for-business-rules",
+        "description": "Every business rule in service/ or domain/ must have unit tests. Minimum 80% coverage",
+        "severity": "critical"
+      },
+      {
+        "rule": "no-business-logic-in-controller",
+        "description": "Controllers only receive/respond to requests. Business logic exclusively in services/domain",
+        "severity": "critical"
+      },
+      {
+        "rule": "dto-validation",
+        "description": "Every API input must be validated via DTOs with explicit schemas (Zod, class-validator)",
+        "severity": "critical"
+      },
+      {
+        "rule": "error-handling-standard",
+        "description": "All exceptions must use the project's standard error class. Never throw generic Error",
+        "severity": "high"
+      },
+      {
+        "rule": "no-raw-sql",
+        "description": "Raw SQL forbidden outside repositories. Use ORM or query builder (Prisma, Drizzle, Knex)",
+        "severity": "high"
+      },
+      {
+        "rule": "no-console-log",
+        "description": "console.log forbidden in backend. Use the project's structured logger with info/warn/error levels",
+        "severity": "high"
+      },
+      {
+        "rule": "api-versioning",
+        "description": "Endpoints must be versioned: /api/v1/... Breaking changes increment the version",
+        "severity": "medium"
+      }
+    ]
+  }
+}
