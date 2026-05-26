@@ -25,6 +25,13 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## API Documentation
+
+This project uses Swagger (OpenAPI) for API documentation.
+
+- **Swagger UI**: Available at [http://localhost:3000/docs](http://localhost:3000/docs) when the server is running.
+- All endpoints must be documented with Swagger decorators before being merged. See existing controllers for examples.
+
 ## Project setup
 
 ```bash
