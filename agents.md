@@ -50,7 +50,7 @@ project/
 | `frontend-standards` | New component created | Checks typescript, a11y, size, styles |
 | `backend-standards` | New endpoint or service created | Checks DTOs, controllers, errors, logger |
 | `trello-workflow` | Trello card mentioned | Card movement, comments, and PR linking patterns |
-| `confluence-sync` | Feature delivered or architectural change | Patterns for creating/updating Confluence pages |
+| `confluence-sync` | Feature delivered, architectural change, or any task mentioning Confluence/ADR/ORFEU/rules | Routes Confluence queries through MCP (never webfetch), reads pages by ID or search, and documents delivered features | In plan or implement stage
 
 ## Models per Agent (OpenRouter)
 
