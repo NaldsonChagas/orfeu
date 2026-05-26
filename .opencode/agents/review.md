@@ -9,6 +9,6 @@
 ## Behavior
 
 1. Load skill `validate-rules`
-2. Go through the complete checklist of all rules in `opencode.json`
+2. Go through the complete checklist of all rules in `opencode-guidelines.json`
 3. Report each violation found with file, line, and rule violated
 4. Block merge if there are critical violations
