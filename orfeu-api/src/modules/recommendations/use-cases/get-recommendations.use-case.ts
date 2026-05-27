@@ -16,30 +16,8 @@ export class GetRecommendationsUseCase {
 
   execute(): Observable<ScoredAlbum> {
     return from(this.libraryRepository.getAll()).pipe(
-      switchMap((library) => {
-        const uniqueArtists = [...new Set(library.map((item) => item.artist))];
-
-        return from(
-          Promise.all(
-            uniqueArtists.map((artist) =>
-              this.getSimilarArtists.execute(artist),
-            ),
-          ),
-        ).pipe(
-          map((artistsNested) => {
-            const seen = new Set<string>();
-            const flat: { name: string }[] = [];
-            for (const list of artistsNested) {
-              for (const artist of list) {
-                const key = artist.name.toLowerCase();
-                if (!seen.has(key)) {
-                  seen.add(key);
-                  flat.push(artist);
-                }
-              }
-            }
-            return flat;
-          }),
+      switchMap((library) =>
+        this.getSimilarArtistsFromLibrary(library).pipe(
           switchMap((artists) => from(this.collectCandidates.execute(artists))),
           switchMap((candidates) =>
             this.libraryVectorService.scoreCandidatesStream(
@@ -47,7 +25,34 @@ export class GetRecommendationsUseCase {
               candidates,
             ),
           ),
-        );
+        ),
+      ),
+    );
+  }
+
+  private getSimilarArtistsFromLibrary(
+    library: { artist: string }[],
+  ): Observable<{ name: string }[]> {
+    const uniqueArtists = [...new Set(library.map((item) => item.artist))];
+
+    return from(
+      Promise.all(
+        uniqueArtists.map((artist) => this.getSimilarArtists.execute(artist)),
+      ),
+    ).pipe(
+      map((artistsNested) => {
+        const seen = new Set<string>();
+        const flat: { name: string }[] = [];
+        for (const list of artistsNested) {
+          for (const artist of list) {
+            const key = artist.name.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              flat.push(artist);
+            }
+          }
+        }
+        return flat;
       }),
     );
   }
