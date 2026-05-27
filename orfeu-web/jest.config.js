@@ -1,11 +1,12 @@
 export default {
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.tsx?$': 'ts-jest',
   },
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
-  collectCoverageFrom: ['src/**/*.{js,jsx}'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}'],
   coverageDirectory: 'coverage',
 };
