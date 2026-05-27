@@ -20,17 +20,12 @@ function LibraryGrid({ albums, isLoading, onRemove }: LibraryGridProps) {
 
   if (albums.length === 0) {
     return (
-      <section className="w-full max-w-2xl flex flex-col items-center justify-center py-xl border border-surface-variant rounded-xl bg-surface-container-low/30 backdrop-blur-sm">
-        <span
-          className="material-symbols-outlined text-secondary mb-md"
-          style={{ fontSize: 48, fontVariationSettings: "'wght' 200" }}
-        >
+      <section className="empty-state">
+        <span className="material-symbols-outlined empty-state-icon">
           library_music
         </span>
-        <h2 className="font-title-md text-title-md text-primary mb-xs">
-          Sua biblioteca está vazia
-        </h2>
-        <p className="font-body-md text-body-md text-secondary text-center max-w-sm">
+        <h2 className="empty-state-title">Sua biblioteca está vazia</h2>
+        <p className="empty-state-description">
           Adicione álbuns na sua biblioteca para começar a receber recomendações
           precisas.
         </p>

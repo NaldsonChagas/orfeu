@@ -4,6 +4,7 @@ import { searchAlbums } from '@/services/albums.service';
 import { getLibrary, addToLibrary } from '@/services/library.service';
 import SearchResultCard from '@/components/search/SearchResultCard';
 import LibraryGrid from '@/components/library/LibraryGrid';
+import RecommendationsSection from '@/components/recommendations/RecommendationsSection';
 import './MainPage.css';
 
 function MainPage() {
@@ -35,22 +36,28 @@ function MainPage() {
     setHasSearched(false);
   }, []);
 
-  const handleSearchSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
+  const handleSearchSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      const trimmed = query.trim();
+      if (!trimmed) return;
 
-    setHasSearched(true);
-    setIsSearching(true);
-    try {
-      const data = await searchAlbums(trimmed);
-      setResults(data);
-    } catch {
-      setResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [query]);
+      setHasSearched(true);
+      setIsSearching(true);
+      try {
+        const data = await searchAlbums(trimmed);
+        const uniqueResults = Array.from(
+          new Map(data.map((album) => [album.id, album])),
+        ).map(([, album]) => album);
+        setResults(uniqueResults);
+      } catch {
+        setResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [query],
+  );
 
   const handleAdd = useCallback(async (album: AlbumDTO) => {
     setAddingIds((prev) => new Set(prev).add(album.id));
@@ -135,11 +142,14 @@ function MainPage() {
         )}
 
         {!hasSearched && (
-          <LibraryGrid
-            albums={libraryAlbums}
-            isLoading={isLibraryLoading}
-            onRemove={handleRemove}
-          />
+          <div className="flex flex-col gap-lg">
+            <LibraryGrid
+              albums={libraryAlbums}
+              isLoading={isLibraryLoading}
+              onRemove={handleRemove}
+            />
+            {libraryAlbums.length > 0 && <RecommendationsSection />}
+          </div>
         )}
       </main>
 

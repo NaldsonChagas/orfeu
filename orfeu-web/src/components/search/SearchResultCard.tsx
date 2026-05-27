@@ -17,11 +17,13 @@ function SearchResultCard({
 
   return (
     <article className="flex items-center gap-sm bg-surface-container-lowest rounded-xl border border-surface-variant p-sm transition-shadow hover:shadow-sm">
-      <img
-        src={album.imageUrl}
-        alt={`Capa do álbum ${album.name}`}
-        className="h-16 w-16 rounded-lg object-cover shrink-0"
-      />
+      {album.imageUrl && (
+        <img
+          src={album.imageUrl}
+          alt={`Capa do álbum ${album.name}`}
+          className="h-16 w-16 rounded-lg object-cover shrink-0"
+        />
+      )}
       <div className="flex-1 min-w-0">
         <h3 className="font-title-md text-title-md text-on-surface truncate">
           {album.name}

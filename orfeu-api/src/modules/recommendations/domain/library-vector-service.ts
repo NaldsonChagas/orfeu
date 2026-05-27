@@ -3,8 +3,8 @@ import type { ScoredAlbum } from '../ports/scored-album.port.js';
 import type { LibraryItem } from '../../library/domain/library-item.js';
 import { TagVectorBuilder } from './tag-vector-builder.js';
 import { CosineSimilarityCalculator } from './cosine-similarity-calculator.js';
-import { from, Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { EMPTY, from, Observable } from 'rxjs';
+import { map, mergeMap, toArray } from 'rxjs/operators';
 
 export class LibraryVectorService {
   constructor(
@@ -52,7 +52,7 @@ export class LibraryVectorService {
     candidates: CandidateAlbum[],
   ): Observable<ScoredAlbum> {
     if (candidates.length === 0 || library.length === 0) {
-      return new Observable<ScoredAlbum>();
+      return EMPTY;
     }
 
     const libraryVectors = library.map((item) =>
@@ -75,6 +75,11 @@ export class LibraryVectorService {
             );
             return { ...candidate, score };
           }),
+          toArray(),
+          map((scored) =>
+            scored.sort((a, b) => b.score - a.score).slice(0, 50),
+          ),
+          mergeMap((top) => from(top)),
         );
       }),
     );
