@@ -33,5 +33,6 @@ import type { LibraryRepositoryPort } from './ports/library-repository.port.js';
       useClass: InMemoryLibraryAdapter,
     },
   ],
+  exports: [LIBRARY_REPOSITORY_PORT],
 })
 export class LibraryModule {}
