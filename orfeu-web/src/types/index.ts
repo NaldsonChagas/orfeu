@@ -2,17 +2,21 @@ export interface AlbumDTO {
   id: string;
   name: string;
   artist: string;
-  coverUrl: string;
+  imageUrl: string;
+  tags: string[];
 }
 
-export interface LibraryItemDTO {
-  id: string;
-  title: string;
-  type: 'album' | 'playlist';
+export interface ScoredAlbumDTO {
+  name: string;
+  artist: string;
+  imageUrl: string;
+  score: number;
 }
 
-export interface RecommendationDTO {
+export interface AddToLibraryDTO {
   id: string;
-  title: string;
-  reason: string;
+  name: string;
+  artist: string;
+  imageUrl: string;
+  tags: string[];
 }
