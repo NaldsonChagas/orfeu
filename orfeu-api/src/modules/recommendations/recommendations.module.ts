@@ -4,9 +4,13 @@ import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from '../../shared/shared.module.js';
 import { RecommendationsController } from './recommendations.controller.js';
 import { LastFMSimilarArtistsAdapter } from './adapters/lastfm-similar-artists.adapter.js';
+import { LastFMTopAlbumsAdapter } from './adapters/lastfm-top-albums.adapter.js';
 import { GetSimilarArtistsUseCase } from './use-cases/get-similar-artists.use-case.js';
+import { CollectCandidatesUseCase } from './use-cases/collect-candidates.use-case.js';
 import { SIMILAR_ARTISTS_PORT } from './ports/similar-artists.port.js';
 import type { SimilarArtistsPort } from './ports/similar-artists.port.js';
+import { TOP_ALBUMS_PORT } from './ports/top-albums.port.js';
+import type { TopAlbumsPort } from './ports/top-albums.port.js';
 import { LibraryModule } from '../library/library.module.js';
 import { LIBRARY_REPOSITORY_PORT } from '../library/ports/library-repository.port.js';
 import type { LibraryRepositoryPort } from '../library/ports/library-repository.port.js';
@@ -24,8 +28,20 @@ import type { LibraryRepositoryPort } from '../library/ports/library-repository.
       inject: [SIMILAR_ARTISTS_PORT, LIBRARY_REPOSITORY_PORT],
     },
     {
+      provide: CollectCandidatesUseCase,
+      useFactory: (
+        topAlbums: TopAlbumsPort,
+        libraryRepository: LibraryRepositoryPort,
+      ) => new CollectCandidatesUseCase(topAlbums, libraryRepository),
+      inject: [TOP_ALBUMS_PORT, LIBRARY_REPOSITORY_PORT],
+    },
+    {
       provide: SIMILAR_ARTISTS_PORT,
       useClass: LastFMSimilarArtistsAdapter,
+    },
+    {
+      provide: TOP_ALBUMS_PORT,
+      useClass: LastFMTopAlbumsAdapter,
     },
   ],
 })
