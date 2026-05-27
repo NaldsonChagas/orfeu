@@ -1,6 +1,6 @@
 # Orfeu Web
 
-Front-end of the Orfeu platform, built with React and Vite.
+React front-end for the Orfeu music discovery platform. It consumes the Orfeu API to display album and artist information in a user-friendly interface.
 
 ## Folder Structure
 
