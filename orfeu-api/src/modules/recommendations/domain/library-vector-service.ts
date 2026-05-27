@@ -3,6 +3,8 @@ import type { ScoredAlbum } from '../ports/scored-album.port.js';
 import type { LibraryItem } from '../../library/domain/library-item.js';
 import { TagVectorBuilder } from './tag-vector-builder.js';
 import { CosineSimilarityCalculator } from './cosine-similarity-calculator.js';
+import { from, Observable } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
 export class LibraryVectorService {
   constructor(
@@ -43,6 +45,39 @@ export class LibraryVectorService {
     scored.sort((a, b) => b.score - a.score);
 
     return scored.slice(0, 50);
+  }
+
+  scoreCandidatesStream(
+    library: LibraryItem[],
+    candidates: CandidateAlbum[],
+  ): Observable<ScoredAlbum> {
+    if (candidates.length === 0 || library.length === 0) {
+      return new Observable<ScoredAlbum>();
+    }
+
+    const libraryVectors = library.map((item) =>
+      this.tagVectorBuilder.buildTagVector(item.artist, item.name),
+    );
+
+    return from(Promise.all(libraryVectors)).pipe(
+      mergeMap((vecs) => {
+        const avgLibraryVector = this.calculateAverageVector(vecs);
+
+        return from(candidates).pipe(
+          mergeMap(async (candidate) => {
+            const candidateVector = await this.tagVectorBuilder.buildTagVector(
+              candidate.artist,
+              candidate.name,
+            );
+            const score = this.cosineSimilarity.calculate(
+              avgLibraryVector,
+              candidateVector,
+            );
+            return { ...candidate, score };
+          }),
+        );
+      }),
+    );
   }
 
   calculateAverageVector(
