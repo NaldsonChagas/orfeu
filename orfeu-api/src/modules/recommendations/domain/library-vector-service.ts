@@ -42,7 +42,7 @@ export class LibraryVectorService {
 
     scored.sort((a, b) => b.score - a.score);
 
-    return scored;
+    return scored.slice(0, 50);
   }
 
   calculateAverageVector(

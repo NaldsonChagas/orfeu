@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
@@ -8,6 +8,7 @@ import type {
 } from '../ports/similar-artists.port.js';
 import { CACHE_PORT } from '../../../shared/ports/cache.port.js';
 import type { CachePort } from '../../../shared/ports/cache.port.js';
+import { withRetry } from '../../../shared/utils/retry.js';
 
 const SIMILAR_ARTISTS_TTL = 24 * 60 * 60 * 1000;
 
@@ -28,6 +29,7 @@ const CACHE_PREFIX = 'similar_artists:';
 
 @Injectable()
 export class LastFMSimilarArtistsAdapter implements SimilarArtistsPort {
+  private readonly logger = new Logger(LastFMSimilarArtistsAdapter.name);
   private readonly apiKey: string;
   private readonly baseUrl: string;
 
@@ -55,13 +57,25 @@ export class LastFMSimilarArtistsAdapter implements SimilarArtistsPort {
       format: 'json',
     };
 
-    const response = await lastValueFrom(
-      this.httpService.get<LastfmSimilarArtistsResponse>(this.baseUrl, {
-        params,
-      }),
+    const context = `similar artists: ${artist}`;
+    const response = await withRetry(
+      () =>
+        lastValueFrom(
+          this.httpService.get<LastfmSimilarArtistsResponse>(this.baseUrl, {
+            params,
+          }),
+        ),
+      { context },
     );
 
+    if (!response) {
+      return [];
+    }
+
     if (response.data.error) {
+      this.logger.warn(
+        `Last.fm API error for ${context}: ${response.data.message}`,
+      );
       return [];
     }
 

@@ -54,9 +54,10 @@ describe('LibraryVectorService', () => {
     });
 
     it('should return empty array when library is empty', async () => {
-      const result = await service.scoreCandidates([], [
-        { name: 'A', artist: 'B', imageUrl: '' },
-      ]);
+      const result = await service.scoreCandidates(
+        [],
+        [{ name: 'A', artist: 'B', imageUrl: '' }],
+      );
       expect(result).toEqual([]);
     });
 
@@ -73,8 +74,20 @@ describe('LibraryVectorService', () => {
       );
 
       const library: LibraryItem[] = [
-        { id: '1', name: 'Album A', artist: 'Artist A', imageUrl: '', tags: [] },
-        { id: '2', name: 'Album B', artist: 'Artist B', imageUrl: '', tags: [] },
+        {
+          id: '1',
+          name: 'Album A',
+          artist: 'Artist A',
+          imageUrl: '',
+          tags: [],
+        },
+        {
+          id: '2',
+          name: 'Album B',
+          artist: 'Artist B',
+          imageUrl: '',
+          tags: [],
+        },
       ];
 
       const candidates: CandidateAlbum[] = [

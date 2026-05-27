@@ -1,9 +1,24 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { setupSwagger } from './swagger';
+import * as dns from 'node:dns';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+
+  const lastfmHost = new URL(
+    process.env.LASTFM_BASE_URL ?? 'https://ws.audioscrobbler.com/2.0/',
+  ).hostname;
+
+  try {
+    await dns.promises.resolve4(lastfmHost);
+  } catch {
+    logger.warn(
+      `DNS resolution failed for ${lastfmHost}. Last.fm API calls will fail or require retries.`,
+    );
+  }
+
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
@@ -23,5 +38,6 @@ async function bootstrap() {
   setupSwagger(app);
 
   await app.listen(process.env.PORT ?? 3000);
+  logger.log(`Application listening on port ${process.env.PORT ?? 3000}`);
 }
 void bootstrap();

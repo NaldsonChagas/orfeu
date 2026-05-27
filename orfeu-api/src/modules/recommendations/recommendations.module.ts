@@ -4,11 +4,12 @@ import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from '../../shared/shared.module.js';
 import { AlbumsModule } from '../albums/albums.module.js';
 import { RecommendationsController } from './recommendations.controller.js';
+import { RecommendationsAlbumsController } from './recommendations-albums.controller.js';
 import { LastFMSimilarArtistsAdapter } from './adapters/lastfm-similar-artists.adapter.js';
 import { LastFMTopAlbumsAdapter } from './adapters/lastfm-top-albums.adapter.js';
 import { GetSimilarArtistsUseCase } from './use-cases/get-similar-artists.use-case.js';
 import { CollectCandidatesUseCase } from './use-cases/collect-candidates.use-case.js';
-import { GetRecommendationsUseCase } from './use-cases/get-recommendations.use-case.js';
+import { GetRecommendationsByAlbumUseCase } from './use-cases/get-recommendations-by-album.use-case.js';
 import { SIMILAR_ARTISTS_PORT } from './ports/similar-artists.port.js';
 import type { SimilarArtistsPort } from './ports/similar-artists.port.js';
 import { TOP_ALBUMS_PORT } from './ports/top-albums.port.js';
@@ -30,7 +31,7 @@ import { LibraryVectorService } from './domain/library-vector-service.js';
     LibraryModule,
     AlbumsModule,
   ],
-  controllers: [RecommendationsController],
+  controllers: [RecommendationsController, RecommendationsAlbumsController],
   providers: [
     {
       provide: TagVectorBuilder,
@@ -66,19 +67,22 @@ import { LibraryVectorService } from './domain/library-vector-service.js';
       inject: [TOP_ALBUMS_PORT, LIBRARY_REPOSITORY_PORT],
     },
     {
-      provide: GetRecommendationsUseCase,
+      provide: GetRecommendationsByAlbumUseCase,
       useFactory: (
         libraryRepository: LibraryRepositoryPort,
+        getSimilarArtists: GetSimilarArtistsUseCase,
         collectCandidates: CollectCandidatesUseCase,
         libraryVectorService: LibraryVectorService,
       ) =>
-        new GetRecommendationsUseCase(
+        new GetRecommendationsByAlbumUseCase(
           libraryRepository,
+          getSimilarArtists,
           collectCandidates,
           libraryVectorService,
         ),
       inject: [
         LIBRARY_REPOSITORY_PORT,
+        GetSimilarArtistsUseCase,
         CollectCandidatesUseCase,
         LibraryVectorService,
       ],

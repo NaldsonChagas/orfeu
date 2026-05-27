@@ -20,6 +20,10 @@ export class GetSimilarArtistsUseCase {
       library.map((item) => item.artist.toLowerCase()),
     );
 
-    return similar.filter((s) => !libraryArtistNames.has(s.name.toLowerCase()));
+    const filtered = similar.filter(
+      (s) => !libraryArtistNames.has(s.name.toLowerCase()),
+    );
+
+    return filtered.slice(0, 20);
   }
 }

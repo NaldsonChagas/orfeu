@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
@@ -8,6 +8,7 @@ import type {
 } from '../ports/top-albums.port.js';
 import { CACHE_PORT } from '../../../shared/ports/cache.port.js';
 import type { CachePort } from '../../../shared/ports/cache.port.js';
+import { withRetry } from '../../../shared/utils/retry.js';
 
 const TOP_ALBUMS_TTL = 12 * 60 * 60 * 1000;
 
@@ -34,6 +35,7 @@ const CACHE_PREFIX = 'top_albums:';
 
 @Injectable()
 export class LastFMTopAlbumsAdapter implements TopAlbumsPort {
+  private readonly logger = new Logger(LastFMTopAlbumsAdapter.name);
   private readonly apiKey: string;
   private readonly baseUrl: string;
 
@@ -62,11 +64,25 @@ export class LastFMTopAlbumsAdapter implements TopAlbumsPort {
       limit: '10',
     };
 
-    const response = await lastValueFrom(
-      this.httpService.get<LastfmTopAlbumsResponse>(this.baseUrl, { params }),
+    const context = `top albums: ${artist}`;
+    const response = await withRetry(
+      () =>
+        lastValueFrom(
+          this.httpService.get<LastfmTopAlbumsResponse>(this.baseUrl, {
+            params,
+          }),
+        ),
+      { context },
     );
 
+    if (!response) {
+      return [];
+    }
+
     if (response.data.error) {
+      this.logger.warn(
+        `Last.fm API error for ${context}: ${response.data.message}`,
+      );
       return [];
     }
 

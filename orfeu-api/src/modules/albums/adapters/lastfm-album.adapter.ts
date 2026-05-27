@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { Album } from '../domain/album.js';
 import { AlbumSearchPort } from '../ports/album-search.port.js';
 import { AlbumTagsPort } from '../ports/album-tags.port.js';
+import { withRetry } from '../../../shared/utils/retry.js';
 
 interface LastfmImage {
   '#text': string;
@@ -43,6 +44,7 @@ interface LastfmTagsResponse {
 
 @Injectable()
 export class LastfmAlbumAdapter implements AlbumSearchPort, AlbumTagsPort {
+  private readonly logger = new Logger(LastfmAlbumAdapter.name);
   private readonly apiKey: string;
   private readonly baseUrl: string;
 
@@ -91,11 +93,23 @@ export class LastfmAlbumAdapter implements AlbumSearchPort, AlbumTagsPort {
       format: 'json',
     };
 
-    const response = await lastValueFrom(
-      this.httpService.get<LastfmTagsResponse>(this.baseUrl, { params }),
+    const context = `tags: ${artist} - ${album}`;
+    const response = await withRetry(
+      () =>
+        lastValueFrom(
+          this.httpService.get<LastfmTagsResponse>(this.baseUrl, { params }),
+        ),
+      { context },
     );
 
+    if (!response) {
+      return [];
+    }
+
     if (response.data.error) {
+      this.logger.warn(
+        `Last.fm API error for ${context}: ${response.data.message}`,
+      );
       return [];
     }
 
