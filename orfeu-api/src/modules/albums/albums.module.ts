@@ -28,5 +28,6 @@ import type { AlbumTagsPort } from './ports/album-tags.port.js';
       useClass: LastfmAlbumAdapter,
     },
   ],
+  exports: [ALBUM_TAGS_PORT],
 })
 export class AlbumsModule {}

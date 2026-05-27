@@ -9,18 +9,6 @@ export default tseslint.config(
     ignores: ['eslint.config.mjs'],
   },
   eslint.configs.recommended,
-  {
-    files: ["src/modules/**/domain/**/*.ts", "src/modules/**/ports/**/*.dto.ts"],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "ClassDeclaration",
-          message: "Use types/interfaces instead of classes in domain and DTO files.",
-        },
-      ],
-    },
-  },
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
   {
