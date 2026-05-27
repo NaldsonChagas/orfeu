@@ -9,7 +9,7 @@ import { LastFMSimilarArtistsAdapter } from './adapters/lastfm-similar-artists.a
 import { LastFMTopAlbumsAdapter } from './adapters/lastfm-top-albums.adapter.js';
 import { GetSimilarArtistsUseCase } from './use-cases/get-similar-artists.use-case.js';
 import { CollectCandidatesUseCase } from './use-cases/collect-candidates.use-case.js';
-import { GetRecommendationsByAlbumUseCase } from './use-cases/get-recommendations-by-album.use-case.js';
+import { GetRecommendationsUseCase } from './use-cases/get-recommendations.use-case.js';
 import { SIMILAR_ARTISTS_PORT } from './ports/similar-artists.port.js';
 import type { SimilarArtistsPort } from './ports/similar-artists.port.js';
 import { TOP_ALBUMS_PORT } from './ports/top-albums.port.js';
@@ -67,14 +67,14 @@ import { LibraryVectorService } from './domain/library-vector-service.js';
       inject: [TOP_ALBUMS_PORT, LIBRARY_REPOSITORY_PORT],
     },
     {
-      provide: GetRecommendationsByAlbumUseCase,
+      provide: GetRecommendationsUseCase,
       useFactory: (
         libraryRepository: LibraryRepositoryPort,
         getSimilarArtists: GetSimilarArtistsUseCase,
         collectCandidates: CollectCandidatesUseCase,
         libraryVectorService: LibraryVectorService,
       ) =>
-        new GetRecommendationsByAlbumUseCase(
+        new GetRecommendationsUseCase(
           libraryRepository,
           getSimilarArtists,
           collectCandidates,
