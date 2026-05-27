@@ -3,7 +3,6 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from '../../shared/shared.module.js';
 import { AlbumsModule } from '../albums/albums.module.js';
-import { RecommendationsController } from './recommendations.controller.js';
 import { RecommendationsAlbumsController } from './recommendations-albums.controller.js';
 import { LastFMSimilarArtistsAdapter } from './adapters/lastfm-similar-artists.adapter.js';
 import { LastFMTopAlbumsAdapter } from './adapters/lastfm-top-albums.adapter.js';
@@ -31,7 +30,7 @@ import { LibraryVectorService } from './domain/library-vector-service.js';
     LibraryModule,
     AlbumsModule,
   ],
-  controllers: [RecommendationsController, RecommendationsAlbumsController],
+  controllers: [RecommendationsAlbumsController],
   providers: [
     {
       provide: TagVectorBuilder,
