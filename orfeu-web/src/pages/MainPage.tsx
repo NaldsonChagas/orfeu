@@ -3,27 +3,36 @@ import type { AlbumDTO } from '@/types';
 import { searchAlbums } from '@/services/albums.service';
 import { getLibrary, addToLibrary } from '@/services/library.service';
 import SearchResultCard from '@/components/search/SearchResultCard';
+import LibraryGrid from '@/components/library/LibraryGrid';
 import './MainPage.css';
 
 function MainPage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<AlbumDTO[]>([]);
-  const [libraryIds, setLibraryIds] = useState<Set<string>>(new Set());
+  const [libraryAlbums, setLibraryAlbums] = useState<AlbumDTO[]>([]);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [addingIds, setAddingIds] = useState<Set<string>>(new Set());
+  const [hasSearched, setHasSearched] = useState(false);
+
   useEffect(() => {
     getLibrary()
-      .then((albums) => setLibraryIds(new Set(albums.map((a) => a.id))))
+      .then((albums) => setLibraryAlbums(albums))
       .catch(() => {
-        // silently fail - library starts empty
-      });
+        setLibraryAlbums([]);
+      })
+      .finally(() => setIsLibraryLoading(false));
+  }, []);
+
+  const libraryIds = new Set(libraryAlbums.map((a) => a.id));
+
+  const handleRemove = useCallback((albumId: string) => {
+    setLibraryAlbums((prev) => prev.filter((a) => a.id !== albumId));
   }, []);
 
   const handleQueryChange = useCallback((value: string) => {
     setQuery(value);
-    if (!value.trim()) {
-      setResults([]);
-    }
+    setHasSearched(false);
   }, []);
 
   const handleSearchSubmit = useCallback(async (e: React.FormEvent) => {
@@ -31,6 +40,7 @@ function MainPage() {
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    setHasSearched(true);
     setIsSearching(true);
     try {
       const data = await searchAlbums(trimmed);
@@ -46,7 +56,7 @@ function MainPage() {
     setAddingIds((prev) => new Set(prev).add(album.id));
     try {
       await addToLibrary(album);
-      setLibraryIds((prev) => new Set(prev).add(album.id));
+      setLibraryAlbums((prev) => [...prev, album]);
     } catch {
       // silently fail - user can retry
     } finally {
@@ -100,7 +110,7 @@ function MainPage() {
           </form>
         </section>
 
-        {query.trim() && (
+        {hasSearched && (
           <section className="w-full max-w-2xl flex flex-col gap-sm">
             {isSearching ? (
               <p className="font-body-md text-body-md text-secondary text-center py-md">
@@ -124,17 +134,12 @@ function MainPage() {
           </section>
         )}
 
-        {!query.trim() && (
-          <section className="empty-state">
-            <span className="empty-state-icon material-symbols-outlined">
-              library_music
-            </span>
-            <h2 className="empty-state-title">Sua biblioteca está vazia</h2>
-            <p className="empty-state-description">
-              Adicione álbuns na sua biblioteca para começar a receber
-              recomendações precisas.
-            </p>
-          </section>
+        {!hasSearched && (
+          <LibraryGrid
+            albums={libraryAlbums}
+            isLoading={isLibraryLoading}
+            onRemove={handleRemove}
+          />
         )}
       </main>
 

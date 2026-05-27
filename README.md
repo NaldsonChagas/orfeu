@@ -21,7 +21,7 @@ Create a `.env` file inside both `orfeu-api` and `orfeu-web` directories. You ca
 
 | Variable | Description | Default |
 |---|---|---|
-| `VITE_API_URL` | URL of the API service | `http://localhost:3000` |
+| `ORFEU_API_URL` | URL of the API service | `http://localhost:3000` |
 
 ## Running with Docker Compose
 
