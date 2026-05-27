@@ -1,4 +1,4 @@
-const BASE_URL = '/api/v1';
+const BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
 
 export class HttpError extends Error {
   constructor(
@@ -40,11 +40,12 @@ async function request<T>(
     throw new HttpError(res.status, message);
   }
 
-  if (res.status === 204) {
+  const text = await res.text();
+  if (!text) {
     return undefined as T;
   }
 
-  return res.json() as Promise<T>;
+  return JSON.parse(text) as T;
 }
 
 export const api = {
