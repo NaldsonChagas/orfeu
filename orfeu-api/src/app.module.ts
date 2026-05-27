@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AlbumsModule } from './modules/albums/albums.module.js';
+import { LibraryModule } from './modules/library/library.module.js';
 import { configValidationSchema } from './config.schema.js';
 
 @Module({
@@ -11,6 +12,7 @@ import { configValidationSchema } from './config.schema.js';
       validationSchema: configValidationSchema,
     }),
     AlbumsModule,
+    LibraryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
